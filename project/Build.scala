@@ -12,7 +12,7 @@ object BuildSettings {
   val buildSettings = SbtScalariform.scalariformSettings ++ Seq(
 
     // Metadata
-    version := "0.5-SNAPSHOT",
+    version := "0.1-cedric",
     organization := "ch.epfl.lamp",
     licenses := Seq("New BSD" -> url("https://raw2.github.com/scala-records/scala-records/master/LICENSE")),
     homepage := Some(url("https://github.com/scala-records/scala-records/")),

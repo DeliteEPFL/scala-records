@@ -21,7 +21,7 @@ object AccessMacros {
      * Prepare a record for access by exposing its fields as a structural type
      * with macro members.
      */
-    def accessRecord[Fields: c.WeakTypeTag](rec: c.Expr[Rec[Fields]]): c.Expr[Fields] = {
+    def accessRecord[Fields: c.WeakTypeTag](rec: c.Expr[Record[Fields]]): c.Expr[Fields] = {
       val schema = recordFields(rec.tree.tpe)
 
       val macroFields = schema.map((genRecordField _).tupled)
@@ -72,7 +72,7 @@ object AccessMacros {
   }
 
   def accessRecord_impl[Fields: c.WeakTypeTag](c: Context)(
-    rec: c.Expr[Rec[Fields]]): c.Expr[Fields] =
+    rec: c.Expr[Record[Fields]]): c.Expr[Fields] =
     new AccessImpls[c.type](c).accessRecord(rec)
 
   def selectField_impl[T: c.WeakTypeTag](c: Context): c.Expr[T] =

@@ -21,7 +21,7 @@ object UnapplyMacros {
     final case class TuplePattern(name: String) extends FieldPattern
     final case class BindPattern(name: String) extends FieldPattern
 
-    def recordUnapply(scrutinee: c.Expr[Rec[Any]]): c.Expr[Any] = {
+    def recordUnapply(scrutinee: c.Expr[Record[Any]]): c.Expr[Any] = {
       if (CompatInfo.isScala210) {
         c.abort(c.enclosingPosition,
           "Record matching is not supported on 2.10.x")
@@ -29,7 +29,7 @@ object UnapplyMacros {
 
       val subPats = c.internal.subpatterns(scrutinee.tree).getOrElse {
         c.abort(c.enclosingPosition,
-          "Rec.unapply only works in pattern matching mode")
+          "Record.unapply only works in pattern matching mode")
       }
 
       val fieldPats: List[FieldPattern] = subPats.map {
@@ -71,7 +71,7 @@ object UnapplyMacros {
 
       val expansion = q"""
         new {
-          def unapply(rec: _root_.records.Rec[Any]) = $body
+          def unapply(rec: _root_.records.Record[Any]) = $body
         }.unapply($scrutinee)
       """
 
@@ -80,7 +80,7 @@ object UnapplyMacros {
 
   }
 
-  def unapply_impl(c: Context)(scrutinee: c.Expr[Rec[Any]]): c.Expr[Any] =
+  def unapply_impl(c: Context)(scrutinee: c.Expr[Record[Any]]): c.Expr[Any] =
     new UnapplyMacros[c.type](c).recordUnapply(scrutinee)
 
 }

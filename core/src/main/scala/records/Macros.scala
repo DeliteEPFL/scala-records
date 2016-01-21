@@ -28,9 +28,9 @@ object Macros {
      * consequence it needs to box when used with primitive types.
      *
      * @param schema List of (field name, field type) tuples
-     * @param ancestors Traits that are mixed into the resulting [[Rec]]
+     * @param ancestors Traits that are mixed into the resulting [[Record]]
      *    (e.g. Serializable). Make sure the idents are fully qualified.
-     * @param fields Additional members/fields of the resulting [[Rec]]
+     * @param fields Additional members/fields of the resulting [[Record]]
      *    (recommended for private data fields)
      * @param dataImpl Implementation of the `_\u200B_data` method.
      *    Should use the parameter `fieldName` of type String and the type
@@ -55,9 +55,9 @@ object Macros {
      * boxing can be avoided.
      *
      * @param schema List of (field name, field type) tuples
-     * @param ancestors Traits that are mixed into the resulting [[Rec]]
+     * @param ancestors Traits that are mixed into the resulting [[Record]]
      *    (e.g. Serializable). Make sure the idents are fully qualified.
-     * @param fields Additional members/fields of the resulting [[Rec]]
+     * @param fields Additional members/fields of the resulting [[Record]]
      *    (recommended for private data fields)
      * @param objectDataImpl Implementation of the `_\u200B_dataObj` method. Should
      *    use the parameter `fieldName` of type String and the type parameter
@@ -94,7 +94,7 @@ object Macros {
     /**
      * Generalized record. Implementation is totally left to the caller.
      * @param schema List of (field name, field type) tuples
-     * @param ancestors Traits that are mixed into the resulting [[Rec]]
+     * @param ancestors Traits that are mixed into the resulting [[Record]]
      *    (e.g. Serializable). Make sure the idents are fully qualified.
      * @param impl However you want to implement the `_\u200B_data` interface.
      */
@@ -122,9 +122,9 @@ object Macros {
       }
 
       q"""
-      new _root_.records.Rec[$structType] with ..$ancestors {
+      new _root_.records.Record[$structType] with ..$ancestors {
         ..$body
-      }: _root_.records.Rec[$structType] with ..$ancestors
+      }: _root_.records.Record[$structType] with ..$ancestors
       """
     }
 
@@ -228,7 +228,7 @@ object Macros {
 
       q"""
       override def equals(that: Any) = that match {
-        case that: _root_.records.Rec[Any] if that.__dataCount == $thisCount =>
+        case that: _root_.records.Record[Any] if that.__dataCount == $thisCount =>
           ${tests.fold[Tree](q"true") { case (x, y) => q"$x && $y" }}
         case _ => false
       }
@@ -313,10 +313,10 @@ object Macros {
     }
 
     /**
-     * Macro that implements [[Rec.applyDynamic]] and [[Rec.applyDynamicNamed]].
+     * Macro that implements [[Record.applyDynamic]] and [[Record.applyDynamicNamed]].
      * You probably won't need this.
      */
-    def recordApply(v: Seq[c.Expr[(String, Any)]]): c.Expr[Rec[Any]] = {
+    def recordApply(v: Seq[c.Expr[(String, Any)]]): c.Expr[Record[Any]] = {
       val constantLiteralsMsg =
         "Records can only be constructed with constant keys (string literals)."
       val noEmptyStrMsg =
@@ -349,7 +349,7 @@ object Macros {
           q"private val _data = $data")(
             q"_data(fieldName).asInstanceOf[T]")
 
-      c.Expr[Rec[Any]](resultTree)
+      c.Expr[Record[Any]](resultTree)
     }
 
     private def checkDuplicate(schema: Seq[(String, c.Type)]): Unit = {
@@ -364,7 +364,7 @@ object Macros {
     }
   }
 
-  def apply_impl(c: Context)(method: c.Expr[String])(v: c.Expr[(String, Any)]*): c.Expr[Rec[Any]] = {
+  def apply_impl(c: Context)(method: c.Expr[String])(v: c.Expr[(String, Any)]*): c.Expr[Record[Any]] = {
     import c.universe._
     method.tree match {
       case Literal(Constant(str: String)) if str == "apply" =>
@@ -376,7 +376,7 @@ object Macros {
       case _ =>
         val methodName = c.macroApplication.symbol.name
         c.abort(NoPosition,
-          s"You may not invoke Rec.$methodName with a non-literal method name.")
+          s"You may not invoke Record.$methodName with a non-literal method name.")
     }
   }
 

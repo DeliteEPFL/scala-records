@@ -7,7 +7,7 @@ import scala.language.reflectiveCalls
 
 class BasicTest extends FlatSpec with Matchers {
 
-  def defRecord(age: Int = 2) = records.Rec(
+  def defRecord(age: Int = 2) = records.Record(
     "age" -> age,
     "name" -> "David")
 
@@ -18,7 +18,7 @@ class BasicTest extends FlatSpec with Matchers {
   }
 
   it should "be created with a special constructor" in {
-    val row = records.Rec("foo" -> 1, ("bar", 2.3), Tuple2("baz", 1.7))
+    val row = records.Record("foo" -> 1, ("bar", 2.3), Tuple2("baz", 1.7))
 
     row.foo should be(1)
     row.bar should be(2.3)
@@ -26,14 +26,14 @@ class BasicTest extends FlatSpec with Matchers {
   }
 
   it should "allow renaming in imports" in {
-    import records.{ Rec => X }
+    import records.{ Record => X }
     val row = X("foo" -> 1)
 
     row.foo should be(1)
   }
 
   it should "allow aliases" in {
-    val X = records.Rec
+    val X = records.Record
     val row = X("foo" -> 1)
 
     row.foo should be(1)
@@ -46,9 +46,9 @@ class BasicTest extends FlatSpec with Matchers {
     defRecord(3).age should be(3)
   }
 
-  import records.Rec
+  import records.Record
   it should "allow strange field names" in {
-    val record = Rec(
+    val record = Record(
       "type" -> "R",
       "blank space" -> "blank space",
       "1" -> 1,
@@ -132,7 +132,7 @@ class BasicTest extends FlatSpec with Matchers {
 
   it should "allow tuples to construct literal rows" in {
 
-    val row = Rec(("foo", 1), ("bar", 2.3), Tuple2("baz", 1.7))
+    val row = Record(("foo", 1), ("bar", 2.3), Tuple2("baz", 1.7))
 
     row.foo should be(1)
     row.bar should be(2.3)
@@ -141,9 +141,9 @@ class BasicTest extends FlatSpec with Matchers {
 
   it should "allow nested records" in {
 
-    val x = Rec("a" -> Rec("b" -> 1))
+    val x = Record("a" -> Record("b" -> 1))
 
-    val y = Rec("a" -> Rec("b" -> Rec("c" -> 1)))
+    val y = Record("a" -> Record("b" -> Record("c" -> 1)))
 
     x.a.b should be(1)
 
@@ -153,24 +153,24 @@ class BasicTest extends FlatSpec with Matchers {
   it should "provide toString" in {
     class A { override def toString = "[A: my String]" }
 
-    val row = Rec("foo" -> "Hello World", "blah" -> 1, "a" -> new A)
+    val row = Record("foo" -> "Hello World", "blah" -> 1, "a" -> new A)
 
     row.toString should be("Rec { foo = Hello World, blah = 1, a = [A: my String] }")
   }
 
   it should "provide hashCode" in {
-    val a = Rec("a" -> 1, "b" -> "Hello World")
-    val b = Rec("a" -> 1.0, "b" -> "Hello World")
-    val c = Rec("a" -> 1, "b" -> "Hello Werld")
+    val a = Record("a" -> 1, "b" -> "Hello World")
+    val b = Record("a" -> 1.0, "b" -> "Hello World")
+    val c = Record("a" -> 1, "b" -> "Hello Werld")
 
     a.hashCode should be(b.hashCode)
     a.hashCode should not be (c.hashCode)
   }
 
   it should "provide __dataCount" in {
-    val a = Rec()
-    val b = Rec("a" -> 1)
-    val c = Rec("c" -> 2, "d" -> 3, "e" -> 5)
+    val a = Record()
+    val b = Record("a" -> 1)
+    val c = Record("c" -> 2, "d" -> 3, "e" -> 5)
 
     a.__dataCount should be(0)
     b.__dataCount should be(1)
@@ -178,7 +178,7 @@ class BasicTest extends FlatSpec with Matchers {
   }
 
   it should "provide __dataAny" in {
-    val a = Rec("c" -> 2, "d" -> 3, "e" -> "bar")
+    val a = Record("c" -> 2, "d" -> 3, "e" -> "bar")
 
     a.__dataAny("c") should be(2)
     a.__dataAny("d") should be(3)
@@ -186,7 +186,7 @@ class BasicTest extends FlatSpec with Matchers {
   }
 
   it should "provide __dataExists" in {
-    val a = Rec("a" -> 4, "Hello World" -> "foo")
+    val a = Record("a" -> 4, "Hello World" -> "foo")
 
     a.__dataExists("a") should be(true)
     a.__dataExists("Hello World") should be(true)
@@ -194,9 +194,9 @@ class BasicTest extends FlatSpec with Matchers {
   }
 
   it should "provide equals" in {
-    val a = Rec("a" -> 1, "b" -> "Hello World")
-    val b = Rec("a" -> 1.0, "b" -> "Hello World")
-    val c = Rec("a" -> 1, "b" -> "Hello Werld")
+    val a = Record("a" -> 1, "b" -> "Hello World")
+    val b = Record("a" -> 1.0, "b" -> "Hello World")
+    val c = Record("a" -> 1, "b" -> "Hello Werld")
 
     a should be(b)
     a should not be (c)
@@ -205,30 +205,30 @@ class BasicTest extends FlatSpec with Matchers {
 
   it should "provide equals for nested records" in {
 
-    val a = Rec("a" -> 1, "b" -> Rec("a" -> "foo", "bar" -> "bar"))
-    val b = Rec("b" -> Rec("a" -> "foo", "bar" -> "bar"), "a" -> 1)
-    val c = Rec("b" -> Rec("a" -> "foo2", "bar" -> "bar"), "a" -> 1)
+    val a = Record("a" -> 1, "b" -> Record("a" -> "foo", "bar" -> "bar"))
+    val b = Record("b" -> Record("a" -> "foo", "bar" -> "bar"), "a" -> 1)
+    val c = Record("b" -> Record("a" -> "foo2", "bar" -> "bar"), "a" -> 1)
 
     a should be(b)
     a should not be (c)
     b should not be (c)
   }
 
-  it should "support Rec(a = 1) syntax" in {
-    val r = Rec(a = "foo", b = 1234)
+  it should "support Record(a = 1) syntax" in {
+    val r = Record(a = "foo", b = 1234)
 
     r.a should be("foo")
     r.b should be(1234)
   }
 
   it should "support generic fields" in {
-    val r = Rec(a = List(1, 2, 3))
+    val r = Record(a = List(1, 2, 3))
 
     r.a should be(List(1, 2, 3))
   }
 
   it should "support array fields" in {
-    val r = Rec(a = "foo", b = Array(1, 2, 3))
+    val r = Record(a = "foo", b = Array(1, 2, 3))
 
     r.a should be("foo")
     r.b should be(Array(1, 2, 3))
@@ -236,13 +236,13 @@ class BasicTest extends FlatSpec with Matchers {
 
   case class Box[T](x: T)
   it should "be able to nest wrapped records" in {
-    val x = Rec("theBox" -> Box(Rec("a" -> 1, "b" -> Box("asdf"))))
+    val x = Record("theBox" -> Box(Record("a" -> 1, "b" -> Box("asdf"))))
 
     x.theBox.x.a should be(1)
   }
 
   it should "allow to write types" in {
-    val x: Rec[{ def name: String; def age: Int }] = Rec(name = "foo", age = 1)
+    val x: Record[{ def name: String; def age: Int }] = Record(name = "foo", age = 1)
 
     x.name should be("foo")
     x.age should be(1)

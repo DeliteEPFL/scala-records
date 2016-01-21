@@ -2,11 +2,11 @@
  * == Labeled Records for Scala ==
  *
  * If you just want to create a record and play around with it, you
- * can use [[Rec.applyDynamic]] or [[Rec.applyDynamicNamed]]:
+ * can use [[Record.applyDynamic]] or [[Record.applyDynamicNamed]]:
  *
  * {{{
- * val data0 = Rec("name" -> "Tom", age -> 5)
- * val data1 = Rec(name = "Tom", age = 5)
+ * val data0 = Record("name" -> "Tom", age -> 5)
+ * val data1 = Record(name = "Tom", age = 5)
  * }}}
  *
  * You can then access its fields as if it were a normal class:
@@ -26,8 +26,8 @@
  * Nested records work, too:
  *
  * {{{
- * val data = Rec("name" -> "Tom", "age" -> 5,
- *                "creds" -> Rec("user" -> "tom", "pw" -> "1234"))
+ * val data = Record("name" -> "Tom", "age" -> 5,
+ *                "creds" -> Record("user" -> "tom", "pw" -> "1234"))
  * data.creds.user // > tom
  * data.creds.pw   // > 1234
  * }}}
@@ -43,11 +43,11 @@
  * == Conversion ==
  *
  * You can easily convert records to case classes with matching
- * fields, using the [[Rec.Convert.to]] method which is added on
+ * fields, using the [[Record.Convert.to]] method which is added on
  * [[Rec]] through an implicit conversion.
  *
  * {{{
- * val data = Rec("name" -> "Tom", "age" -> 5)
+ * val data = Record("name" -> "Tom", "age" -> 5)
  * case class Person(name: String, age: Int)
  * data.to[Person] // > Person("Tom", 5)
  * }}}
@@ -58,7 +58,7 @@
  * record that the target case class doesn't require:
  *
  * {{{
- * val data = Rec("name" -> "Tom", "age" -> 5, "height" -> 40)
+ * val data = Record("name" -> "Tom", "age" -> 5, "height" -> 40)
  * case class Person(name: String, age: Int)
  * data.to[Person] // > Person("Tom", 5)
  * }}}
@@ -70,10 +70,10 @@
  *
  * {{{
  * import RecordConversions._
- * val tom: Person = Rec("name" -> "Tom", "age" -> 5)
+ * val tom: Person = Record("name" -> "Tom", "age" -> 5)
  * val persons = List[Person](
- *   Rec("name" -> "Tom", "age" -> 5),
- *   Rec("name" -> "Sally", "age" -> 7))
+ *   Record("name" -> "Tom", "age" -> 5),
+ *   Record("name" -> "Sally", "age" -> 7))
  * }}}
  *
  * == Your own records ==
@@ -90,16 +90,16 @@
  * You may provide your own back-end to records by using the macro
  * library provided by [[Macros.RecordMacros]]. You will want
  * to use one of the following methods to create your record:
- *  - [[Macros.RecordMacros.record]]: Simplest case, used by [[Rec.applyDynamic]]
- *    and [[Rec.applyDynamicNamed]].
+ *  - [[Macros.RecordMacros.record]]: Simplest case, used by [[Record.applyDynamic]]
+ *    and [[Record.applyDynamicNamed]].
  *  - [[Macros.RecordMacros.specializedRecord]]: Records that are specialized
  *    on primitive types. Avoids boxing.
  *  - [[Macros.RecordMacros.genRecord]]: Generalized record. Probably not
  *    what you want.
  *
  * For an example usage, have a look at the code of
- * [[Macros.apply_impl]] (the macro for [[Rec.applyDynamic]] and
- * [[Rec.applyDynamicNamed]]).
+ * [[Macros.apply_impl]] (the macro for [[Record.applyDynamic]] and
+ * [[Record.applyDynamicNamed]]).
  *
  */
 package object records

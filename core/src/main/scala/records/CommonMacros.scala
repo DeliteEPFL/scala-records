@@ -16,7 +16,7 @@ object CommonMacros {
 
     /** Determine the fields of a record */
     def recordFields(recType: Type): Schema = {
-      val base = recType.baseType(typeOf[Rec[Any]].typeSymbol)
+      val base = recType.baseType(typeOf[Record[Any]].typeSymbol)
       base match {
         case TypeRef(_, _, List(RefinedType(_, scope))) =>
           val fields =

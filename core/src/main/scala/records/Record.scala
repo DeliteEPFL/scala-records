@@ -7,45 +7,45 @@ import scala.language.dynamics
 import scala.reflect._
 import RecordConversions._
 
-object Rec extends Dynamic {
+object Record extends Dynamic {
   /**
    * Create a "literal record" with field value pairs `v`:
    * {{{
-   * Rec("name" -> "Hans", "age" -> 7)
+   * Record("name" -> "Hans", "age" -> 7)
    * }}}
    *
    * This method has nothing dynamic in its nature, but defining
    * `apply` won't allow [[applyDynamicNamed]] to get triggered for
    * calls of the form:
    * {{{
-   * Rec(name = "Hans", age = 7)
+   * Record(name = "Hans", age = 7)
    * }}}
    */
-  def applyDynamic(method: String)(v: (String, Any)*): Rec[Any] = macro records.Macros.apply_impl
+  def applyDynamic(method: String)(v: (String, Any)*): Record[Any] = macro records.Macros.apply_impl
 
   /**
    * Create a "literal record" with field value pairs `v` using named
    * parameters:
    * {{{
-   * Rec(name = "Hans", age = 7)
+   * Record(name = "Hans", age = 7)
    * }}}
    */
-  def applyDynamicNamed(method: String)(v: (String, Any)*): Rec[Any] = macro records.Macros.apply_impl
+  def applyDynamicNamed(method: String)(v: (String, Any)*): Record[Any] = macro records.Macros.apply_impl
 
   /** Extract a sequence of fields out of the record. */
-  def unapply(scrutinee: Rec[Any]): Any = macro records.UnapplyMacros.unapply_impl
+  def unapply(scrutinee: Record[Any]): Any = macro records.UnapplyMacros.unapply_impl
 
   /**
    * An extension class for operations on records.
    *
    * It is implemented as an extension to avoid collision with the record fields.
    */
-  class Ops[From <: Rec[Any]](val record: From) extends AnyVal {
+  class Ops[From <: Record[Any]](val record: From) extends AnyVal {
     def to[To]: To = macro RecordConversions.to_impl[From, To]
   }
 
-  implicit def ops[Fields](rec: Rec[Fields]): Ops[Rec[Fields]] = new Ops(rec)
-  implicit def fld[Fields](rec: Rec[Fields]): Fields = macro AccessMacros.accessRecord_impl[Fields]
+  implicit def ops[Fields](rec: Record[Fields]): Ops[Record[Fields]] = new Ops(rec)
+  implicit def fld[Fields](rec: Record[Fields]): Fields = macro AccessMacros.accessRecord_impl[Fields]
 }
 
 /**
@@ -60,18 +60,18 @@ object Rec extends Dynamic {
  * possible to avoid boxing.
  *
  * The [[Fields]] member describes the static fields of a record as a
- * structural type. The implicit conversion [[Rec.fld]] gives access to them.
+ * structural type. The implicit conversion [[Record.fld]] gives access to them.
  *
  * While you may extend this class normally, you probably want to use the macros provided
  * by [[Macros.RecordMacros]] to tie the records to your backend. These macros
- * will implement all methods on Rec. Additionaly, they provide capabilities to
+ * will implement all methods on Record. Additionaly, they provide capabilities to
  * extend other traits (such as Serializable or a trait defined by your project)
  * and add custom fields if required.
  *
- * If you just want to create a record, use [[Rec.applyDynamic]] or
- * [[Rec.applyDynamicNamed]].
+ * If you just want to create a record, use [[Record.applyDynamic]] or
+ * [[Record.applyDynamicNamed]].
  */
-trait Rec[+Fields] {
+trait Record[+Fields] {
   /** The number of fields in this record */
   def __dataCount: Int
 

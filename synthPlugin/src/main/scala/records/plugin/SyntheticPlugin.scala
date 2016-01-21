@@ -26,7 +26,7 @@ class SyntheticPlugin(val global: Global) extends Plugin {
 
     class RSynthTransformer(unit: CompilationUnit) extends Transformer {
       private def needsSynthetic(sym: Symbol) =
-        sym.fullName.startsWith("records.Rec.__data")
+        sym.fullName.startsWith("records.Record.__data")
 
       override def transform(tree: Tree): Tree = tree match {
         case dd: DefDef if needsSynthetic(dd.symbol) =>
